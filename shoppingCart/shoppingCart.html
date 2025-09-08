@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Shopping Cart Demo (CRUD + jQuery)</title>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <style>
+        body { font-family: Arial, sans-serif; background: #fafafa; margin: 40px; }
+        .container { width: 600px; margin: 0 auto; background: #fff; padding: 30px; border-radius: 8px; box-shadow: 0 2px 10px #ccc; }
+        h2 { margin-bottom: 20px; }
+        .form-row { margin-bottom: 15px; }
+        .form-row input { padding: 5px 8px; margin-right: 10px; }
+        .btn { padding: 5px 15px; background: #1976D2; color: #fff; border: none; border-radius: 4px; cursor: pointer; }
+        .btn:hover { background: #145ea8; }
+        table { width: 100%; border-collapse: collapse; margin-top: 15px;}
+        th, td { padding: 8px 10px; border-bottom: 1px solid #eee; }
+        th { background: #f5f5f5;}
+        .cart-price-total { font-size: 1.2em; color: #EC5E10; font-weight: bold; }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h2>Shopping Cart</h2>
+    <form id="add-item-form">
+        <div class="form-row">
+            <input type="text" id="item-name" placeholder="Product Name" required>
+            <input type="number" id="item-price" placeholder="Unit Price" min="0" step="0.01" required>
+            <input type="number" id="item-qty" placeholder="Qty" min="1" step="1" value="1" required>
+            <button class="btn" id="add-item-btn">Add Item</button>
+            <button class="btn" id="update-item-btn" style="display:none;">Update Item</button>
+        </div>
+    </form>
+    <table class="cart-items-table">
+        <thead>
+            <tr>
+                <th>Product Name</th>
+                <th>Unit Price</th>
+                <th>Qty</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+        <!-- Cart items will be injected here -->
+        </tbody>
+    </table>
+    <div style="margin-top:20px;">
+        <span>Total Price: </span>
+        <span class="cart-price-total">USD 0.00</span>
+    </div>
+</div>
+<script src="shoppingCart.js"></script>
+</body>
+</html>
