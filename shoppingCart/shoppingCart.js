@@ -6,6 +6,7 @@ var MyShoppingCart = {
     cartInitialize: function() {
         this.cartItems = [];
         this.cartPriceTotal = 0;
+        this.editingIndex = -1;
         this.updateCartDisplay();
     },
 
@@ -35,6 +36,11 @@ var MyShoppingCart = {
         if (index > -1 && index < this.cartItems.length) {
             this.cartItems.splice(index, 1);
             this.updateCartDisplay();
+            //Reset form if deleting the item being edited
+            if(this.editingIndex === index){
+               this.resetForm();
+            }
+           
         }
     },
 
@@ -62,13 +68,53 @@ var MyShoppingCart = {
                 + '<td>' + item.name + '</td>'
                 + '<td>' + item.price.toFixed(2) + '</td>'
                 + '<td><input type="number" min="1" class="cart-qty-input" value="' + item.quantity + '" data-index="' + idx + '"></td>'
+                + '<td><button class="btn-edit" data-index="' + idx + '">Edit</button></td>'
                 + '<td><button class="btn-delete" data-index="' + idx + '">Delete</button></td>'
                 + '</tr>';
             $table.append(row);
         });
         MyShoppingCart.cartTotalPriceUpdate();
-    }
-};
+    },
+
+    // Toggle to Add Item mode 
+    toggleToAddMode: function() {
+        this.editingIndex = -1;
+        $('#add-item-btn').show();
+        $('#update-item-btn').hide();
+        this.clearForm();
+    },
+
+    //Toggle to update Item mode
+    toggleToUpdateMode: function(index) {
+          this.editingIndex = index;
+          $('#add-item-btn').hide();
+          $('#update-item-btn').show();
+          this.populateForm(index);
+    }, 
+
+    // Populate form with item data for editing 
+       populateForm: function(index) { 
+        if (this.cartItems[index]) {
+            var item = this.cartItems[index];
+            $('#item-name').val(item.name);
+            $('#item-price').val(item.price);
+            $('#item-qty').val(item.quantity);
+        }
+},
+
+     //clear form inputs
+     clearForm: function() {
+        $('#item-name').val('');
+        $('#item-price').val('');
+        $('#item-qty').val('1');
+    },
+
+    //Reset form to add mode
+        resetForm: function() {
+            this.toggleToAddMode();
+        }
+     };
+
 
 // Document ready
 $(function(){
@@ -90,6 +136,27 @@ $(function(){
         }
     });
 
+    // Update item event 
+    $('#update-item-btn').on('click', function(e){
+        e.preventDefault();
+         var name = $('#item-name').val().trim();
+         var price = parseFloat($('#item-price').val());
+         var quantity = parseInt($('#item-qty').val());
+         if(name && !isNaN(price) && price >= 0 && !isNaN(quantity) && quantity > 0){
+             MyShoppingCart.updateItem(MyShoppingCart.editingIndex, { name, price, quantity });
+             MyShoppingCart.toggleToAddMode();
+         }else {
+             alert('Please enter valid item details.');
+                   
+        }
+    });
+
+    //Edit item even (delegate)
+    $('.cart-items-table').on('click', '.btn-edit', function(){
+        var idx = parseInt($(this).data('index'));
+        MyShoppingCart.toggleToUpdateMode(idx);
+    });
+
     // Delete item event (delegate)
     $('.cart-items-table').on('click', '.btn-delete', function(){
         var idx = parseInt($(this).data('index'));
@@ -107,4 +174,16 @@ $(function(){
             $(this).val(MyShoppingCart.cartItems[idx].quantity);
         }
     });
+
+
+    // Cancel edit mode when form is cleared manually
+    $('#item-name, #item-price, #item-qty').on('input', function(){
+        if(MyShoppingCart.editingIndex !== -1 && 
+           $('#item-name').val() === '' && 
+           $('#item-price').val() === '' && 
+           $('#item-qty').val() === '1'){
+            MyShoppingCart.toggleToAddMode();
+        }
+    });
+
 });
